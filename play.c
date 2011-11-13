@@ -37,6 +37,9 @@ main() {
     int length, count_of_words;
     int i;
     ALshort *signals;
+    ALCdevice *device;
+    ALCcontext *context;
+    ALuint buffer, source;
 
     signals = malloc(sizeof(signals) * COUNT);
 
@@ -53,6 +56,29 @@ main() {
 /*for (i = 0; i < length; i++) {
     printf("%d - %d\n", signals[i], i);
 }*/
+
+    device  = alcOpenDevice(NULL);
+    context = alcCreateContext(device, NULL);
+    alcMakeContextCurrent(context);
+    alGenBuffers(1, &buffer);
+
+    alBufferData(buffer, AL_FORMAT_MONO16, signals, length, SAMPLING_FREQUENCY);
+
+    alGenSources(1, &source);
+
+    alSourcei(source, AL_BUFFER, buffer);
+
+    alSourcePlay(source);
+
+    sleep(302);
+
+    alSourceStop(source);
+
+    alDeleteSources(1, &source);
+    alDeleteBuffers(1, &buffer);
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(context);
+    alcCloseDevice(device);
 
     return 0;
 }
