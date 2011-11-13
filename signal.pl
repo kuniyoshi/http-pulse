@@ -10,17 +10,28 @@ use Time::StopWatchWithMessage;
 use Data::Dumper qw( Dumper );
 use Audio::Wav;
 
-my $audio = Audio::Wav->read( shift );
+Readonly my $LENGTH => 9000; # ( 2^16 / length( -32768 ) )
 
-my @channels = $audio->read;
-print $channels[0];
+my $audio = Audio::Wav->read( shift );
+my $index;
 
 while ( my @channels = $audio->read ) {
-    print "\t", $channels[0];
+    my $signal = $channels[0];
+
+    if ( ! $signal && $signal != 0 ) {
+        die Dumper $signal;
+    }
+
+    if ( $index % $LENGTH == 0 && $index ) {
+warn "linefeed: $index\t$signal";
+        print $signal, "\n";
+    }
+    else {
+        print $signal, "\t";
+    }
+
+    $index++;
 }
-
-print "\n";
-
 
 __END__
 my $watch = Time::StopWatchWithMessage->new;
