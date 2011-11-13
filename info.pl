@@ -4,12 +4,16 @@ use utf8;
 use strict;
 use warnings;
 use open qw( :utf8 :std );
+use List::Util qw( min max );
 use Data::Dumper qw( Dumper );
 use Audio::Wav;
 
 my $audio = Audio::Wav->read( shift );
 warn Dumper $audio->details;
 
+
+
+__END__
 my( $min, $max ) = ( 0, 0 );
 
 while ( my @chanels = $audio->read ) {

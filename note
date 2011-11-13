@@ -1,3 +1,23 @@
+--- URLs
+wiki:
+http://ja.wikipedia.org/wiki/OpenAL
+ref:
+http://connect.creativelabs.com/openal/Documentation/Forms/AllItems.aspx
+http://www.devmaster.net/articles.php?catID=6
+http://www.memorize-being.net/releases/oal11spec-ja/spec-5.html
+c:
+http://www5c.biglobe.ne.jp/~ecb/c/c00.html
+gdb:
+http://rat.cis.k.hosei.ac.jp/article/devel/debugongccgdb1.html
+perl meats beats:
+http://www.slideshare.net/technocat/perl-meets-beats-9696162
+node:
+http://teddziuba.com/2011/10/node-js-is-cancer.html
+http://blog.uu59.org/2011-10-04-node-js-is-cancer.html
+
+--- note
+
+
 Enter で減衰が早くなる
 Space で減衰が長くなる
 新しいキーを検出したら重ねる

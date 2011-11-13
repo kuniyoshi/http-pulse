@@ -5,19 +5,69 @@
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 
-#define BUFFER              65536
+#define INPUT_BUFFER        (1 << 16)
+#define BUFFER              (1 << 16)
+#define SEP_CHAR            "\t"
+#define MAX_WORDS           INPUT_BUFFER
 #define SAMPLING_FREQUENCY  44100
-#define LENGHT              53252540
+#define COUNT               62182844
+
+int
+split_string(char *chars, char **words) {
+    char *cp;
+    int length;
+
+    cp = chars;
+
+    for (length = 0; length < MAX_WORDS; length++) {
+        if ((words[length] = strtok(cp, SEP_CHAR)) == NULL) {
+            break;
+        }
+
+        cp = NULL;
+    }
+
+    return length;
+}
 
 int
 main() {
+    char input[INPUT_BUFFER];
+    char *words[MAX_WORDS];
+    int length, count_of_words;
+    int i;
+    ALshort *signals;
+
+    signals = malloc(sizeof(signals) * COUNT);
+
+    length = 0;
+
+    while (fgets(input, INPUT_BUFFER, stdin) != NULL) {
+        count_of_words = split_string(input, words);
+
+        for (i = 0; i < count_of_words; i++) {
+            signals[length++] = atoi(words[i]);
+        }
+    }
+
+/*for (i = 0; i < length; i++) {
+    printf("%d - %d\n", signals[i], i);
+}*/
+
+    return 0;
+}
+/*
     char read_buffer[BUFFER];
     ALCdevice *device;
     ALCcontext *context;
     ALshort *signals;
     ALuint buffer, source;
-    int i, length;
-    length = 0;
+    int length = 0;
+    int frequency, bit_rate, channel_number;
+    int i;
+//    length = 0;
+
+printf("buffer: %d\n", BUFFER);
 
 puts("start");
 
@@ -35,12 +85,13 @@ puts("done malloc");
         length++;
     }
 
-    for (i = 0; i < LENGHT; i++) {
-        printf("%d\n", signals[i]);
-    }
+printf("length: %d\n", length);
 
+for (i = 0; i < length; i++) {
+//    printf("[%d] - ", signals[i]);
+}
+puts("");
 
-/*
 puts("done signals");
 
     device  = alcOpenDevice(NULL);
@@ -50,9 +101,15 @@ puts("done signals");
 
 puts("done init audio");
 
-    alBufferData(buffer, AL_FORMAT_MONO16, signals, sizeof(signals), BUFFER);
+    alBufferData(buffer, AL_FORMAT_MONO16, signals, length, SAMPLING_FREQUENCY);
 
 puts("done prepare buffer");
+alGetBufferi(buffer, AL_FREQUENCY, &frequency);
+printf("buffer freq: %d\n", frequency);
+alGetBufferi(buffer, AL_BITS, &bit_rate);
+printf("buffer bit_rate: %d\n", bit_rate);
+alGetBufferi(buffer, AL_CHANNELS, &channel_number);
+printf("buffer channels: %d\n", channel_number);
 
     alGenSources(1, &source);
 
@@ -75,7 +132,7 @@ puts("done plaing");
     alcMakeContextCurrent(NULL);
     alcDestroyContext(context);
     alcCloseDevice(device);
-*/
+
     return 0;
 }
-
+*/
