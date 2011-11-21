@@ -36,4 +36,7 @@ mode, freq, vol, ... のような感じ
 
 バッファ関係が難しい
 
+data[i] = sin(2 * PI * FREQ * ( i / 22050 ) ) * VOL;
+
+
 

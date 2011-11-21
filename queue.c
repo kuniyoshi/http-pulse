@@ -32,21 +32,37 @@ int
 main() {
     char input[INPUT_BUFFER];
     char *words[MAX_WORDS];
-    int count_of_words, buffer_index, signal_index;
-    int i;
-//    int frequency, bit_rate, channel_number;
-    int source_state;
-    ALshort signals[COUNT_OF_BUFFERS][BUFFER];
+    int count_of_words, buffer_index, signal_index, sleep_usec, count_of_processed, count_of_queued;
+    int i, j;
+    ALint state;
+    ALshort signals[BUFFER];
     ALCdevice *device;
     ALCcontext *context;
-    ALuint buffers[COUNT_OF_BUFFERS], source;
+    ALuint buffer, buffers[COUNT_OF_BUFFERS], source;
 
+    sleep_usec   = (int)(((1.0 / SAMPLING_FREQUENCY) * MAX_WORDS / 2 ) * 1000 * 1000);
+printf("sampling frequency: %d\n", SAMPLING_FREQUENCY);
+printf("max words: %d\n", MAX_WORDS);
+printf("usleep: %d\n", sleep_usec);
     buffer_index = 0;
     device       = alcOpenDevice(NULL);
     context      = alcCreateContext(device, NULL);
     alcMakeContextCurrent(context);
     alGenBuffers(COUNT_OF_BUFFERS, buffers);
+    alGenBuffers(1, &buffer);
     alGenSources(1, &source);
+
+    for (i = 0; i < COUNT_OF_BUFFERS; i++) {
+        for (j = 0; j < MAX_WORDS; j++) {
+            signals[j] = 0;
+        }
+
+        alBufferData(buffers[i], AL_FORMAT_MONO16, signals, MAX_WORDS, SAMPLING_FREQUENCY);
+    }
+
+    alSourceQueueBuffers(source, COUNT_OF_BUFFERS, buffers);
+
+    alSourcePlay(source);
 
     // Read signals from stdin.
     while (fgets(input, INPUT_BUFFER, stdin) != NULL) {
@@ -54,16 +70,33 @@ main() {
         signal_index = 0;
 
         for (i = 0; i < count_of_words; i++) {
-//printf("buffer index: %d\n", buffer_index);
-//printf("signal index: %d\n", signal_index);
-//printf("print data: %s\n", words[i]);
-//printf("data: %d\n", atoi(words[i]));
-            signals[buffer_index][signal_index++] = (ALshort)atoi(words[i]);
-//printf("signal: %d\n", signals[buffer_index][signal_index]);
+            signals[signal_index++] = (ALshort)atoi(words[i]);
         }
-//puts("foo");
 
-        alBufferData(buffers[buffer_index], AL_FORMAT_MONO16, signals[buffer_index], sizeof(int) * signal_index, SAMPLING_FREQUENCY);
+        count_of_processed = 0;
+
+        while (! count_of_processed > 0) {
+            alGetSourcei(source, AL_BUFFERS_PROCESSED, &count_of_processed);
+//printf("%d: \n", count_of_processed);
+            usleep(sleep_usec);
+        }
+
+//printf("%d: \n", count_of_processed);
+
+        alSourceUnqueueBuffers(source, 1, &buffer);
+        alBufferData(buffer, AL_FORMAT_MONO16, signals, sizeof(ALshort) * signal_index, SAMPLING_FREQUENCY);
+        alSourceQueueBuffers(source, 1, &buffer);
+
+        alGetSourcei(source, AL_SOURCE_STATE, &state);
+
+/*
+        if (state != AL_PLAYING) {
+puts("start plaing");
+            alSourceRewind(source);
+            alSourcePlay(source);
+        }
+*/
+    }
 /*
 alGetBufferi(buffers[buffer_index], AL_FREQUENCY, &frequency);
 printf("buffer freq: %d\n", frequency);
@@ -73,24 +106,63 @@ alGetBufferi(buffers[buffer_index], AL_CHANNELS, &channel_number);
 printf("buffer channels: %d\n", channel_number);
 */
 
-        buffer_index++;
+//        alSourcePlay(source);
 
-        if (buffer_index == COUNT_OF_BUFFERS) {
-puts("reatch");
-            alSourceQueueBuffers(source, (ALsizei)COUNT_OF_BUFFERS, buffers);
-            alSourcePlay(source);
+/*
+        alGetSourcei(source, AL_BUFFERS_PROCESSED, &count_of_processed);
 
-            for (alGetSourcei(source, AL_SOURCE_STATE, &source_state); source_state == AL_PLAYING; alGetSourcei(source, AL_SOURCE_STATE, &source_state)) {
-                sleep(1);
+        while ((count_of_all_buffers - count_of_processed) > (int)(COUNT_OF_BUFFERS - 3)) {
+//puts("unqueue is needed");
+//        while (is_unqueue_needed(source)) {
+            alGetSourcei(source, AL_BUFFERS_QUEUED, &count_of_all_buffers);
+            alGetSourcei(source, AL_BUFFERS_PROCESSED, &count_of_processed);
+printf("%3d - %3d - %3d\n", buffer_index, count_of_all_buffers, count_of_processed);
+//printf("count of all buffers: %d\n", count_of_all_buffers);
+//printf("count of processed buffers: %d\n", count_of_processed);
+
+            if (count_of_processed > 0) {
+                alSourceUnqueueBuffers(source, count_of_processed, buffers);
+            }
+            else {
+//                usleep(sleep_usec);
+            }
+        }
+        alSourcePlay(source);
+*/
+/*
+        queue_states[buffer_index] = true;
+
+        while (is_unqueue_needed(queue_states)) {
+puts("unqueue is needed");
+            if (alGetSourcei(source, AL_BUFFER_PROCESSED) > 0) {
+            }
+            else {
+                usleep(sleep_usec);
+            }
+            unqueued_count = 0;
+
+            for (i = 0; i < COUNT_OF_BUFFERS; i++) {
+                alSourceUnqueueBuffers(source, 1, &buffers[i]);
+
+                if (alGetError() != AL_INVALID_VALUE) {
+puts("dequeue");
+                    queue_states[i] = false;
+                    unqueued_count++;
+                }
             }
 
-            alSourceStop(source);
-            alSourceUnqueueBuffers(source, COUNT_OF_BUFFERS, buffers);
-
+            if (unqueued_count == 0) {
+                usleep(sleep_usec);
+            }
+        }
+*/
+/*
+        if (++buffer_index == COUNT_OF_BUFFERS) {
             buffer_index = 0;
         }
     }
-
+*/
+    alSourceStop(source);
     alDeleteSources(1, &source);
     alDeleteBuffers(COUNT_OF_BUFFERS, buffers);
     alcMakeContextCurrent(NULL);
