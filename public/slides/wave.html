@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LT on Seesaa at 2011-11-22</title>
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="/css/style.css" media="screen" rel="stylesheet" />
+    <script src="//code.jquery.com/jquery-1.6.2.min.js"></script>
+    <script src="/js/flot/jquery.flot.min.js"></script>
+    <style>
+      <div id="sin">{ width: 600, height: 400 }</div>
+      <div id="impulse">{ width: 600, height: 400 }</div>
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>HTTP とキー音</h1>
+      <h2>波形</h2>
+    </header>
+    <div>
+      <dl>
+        <dt>正弦波</dt>
+        <dd>
+          <div id="sin"></div>
+        </dd>
+        <dt>インパルス波</dt>
+        <dd>
+          <div id="impulse"></div>
+        </dd>
+      </dl>
+    </div>
+    <footer>
+      <script type="text/javascript">
+        //<![CDATA[
+          $.getJSON("http://localhost:3000/signals/sin.json", function (signals) {
+            console.log(signals);
+            $.plot($("#sin"), [signals]);
+          });
+          $.getJSON("http://localhost:3000/signals/impulse.json", function (signals) {
+            $.plot($("#impulse"), [{data: signals}]);
+          });
+        //]]>
+      </script>
+    </footer>
+  </body>
+</html>

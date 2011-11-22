@@ -40,7 +40,8 @@ main() {
     ALCcontext *context;
     ALuint buffer, buffers[COUNT_OF_BUFFERS], source;
 
-    sleep_usec   = (int)(((1.0 / SAMPLING_FREQUENCY) * MAX_WORDS / 2 ) * 1000 * 1000);
+    sleep_usec   = 1000;
+//    sleep_usec   = (int)(((1.0 / SAMPLING_FREQUENCY) * MAX_WORDS / 2 ) * 1000 * 1000);
 printf("sampling frequency: %d\n", SAMPLING_FREQUENCY);
 printf("max words: %d\n", MAX_WORDS);
 printf("usleep: %d\n", sleep_usec);
@@ -60,9 +61,11 @@ printf("usleep: %d\n", sleep_usec);
         alBufferData(buffers[i], AL_FORMAT_MONO16, signals, MAX_WORDS, SAMPLING_FREQUENCY);
     }
 
-    alSourceQueueBuffers(source, COUNT_OF_BUFFERS, buffers);
+//    alSourceQueueBuffers(source, COUNT_OF_BUFFERS, buffers);
 
-    alSourcePlay(source);
+//    alSourcePlay(source);
+    alSourceStop(source);
+    alGetSourcei(source, AL_SOURCE_STATE, &state);
 
     // Read signals from stdin.
     while (fgets(input, INPUT_BUFFER, stdin) != NULL) {
@@ -73,21 +76,35 @@ printf("usleep: %d\n", sleep_usec);
             signals[signal_index++] = (ALshort)atoi(words[i]);
         }
 
-        count_of_processed = 0;
+        alBufferData(buffer, AL_FORMAT_MONO16, signals, sizeof(ALshort) * signal_index, SAMPLING_FREQUENCY);
 
+        alGetSourcei(source, AL_SOURCE_STATE, &state);
+
+        while (state == AL_PLAYING) {
+            usleep(sleep_usec);
+            alGetSourcei(source, AL_SOURCE_STATE, &state);
+        }
+
+        alSourceRewind(source);
+        alSourcei(source, AL_BUFFER, buffer);
+        alSourcePlay(source);
+
+//        count_of_processed = 0;
+
+/*
         while (! count_of_processed > 0) {
             alGetSourcei(source, AL_BUFFERS_PROCESSED, &count_of_processed);
 //printf("%d: \n", count_of_processed);
             usleep(sleep_usec);
         }
-
+*/
 //printf("%d: \n", count_of_processed);
-
+/*
         alSourceUnqueueBuffers(source, 1, &buffer);
         alBufferData(buffer, AL_FORMAT_MONO16, signals, sizeof(ALshort) * signal_index, SAMPLING_FREQUENCY);
         alSourceQueueBuffers(source, 1, &buffer);
-
-        alGetSourcei(source, AL_SOURCE_STATE, &state);
+*/
+//        alGetSourcei(source, AL_SOURCE_STATE, &state);
 
 /*
         if (state != AL_PLAYING) {

@@ -1,0 +1,35 @@
+!!! 5
+%html(lang="ja")
+  %head
+    %meta(charset="UTF-8")
+    %title LT on Seesaa at 2011-11-22
+    /[if lt IE 9]
+      %script(src="//html5shim.googlecode.com/svn/trunk/html5.js")
+    %link(rel="stylesheet" media="screen" href="/css/style.css")
+    %script(src="//code.jquery.com/jquery-1.6.2.min.js")
+    %script(src="/js/flot/jquery.flot.min.js")
+    %style
+      #sin { width: 600, height: 400 }
+      #impulse { width: 600, height: 400 }
+  %body
+    %header
+      %h1 HTTP とキー音
+      %h2 波形
+    %div
+      %dl
+        %dt 正弦波
+        %dd
+          %div#sin
+        %dt インパルス波
+        %dd
+          %div#impulse
+    %footer
+      :javascript
+        $.getJSON("http://localhost:3000/signals/sin.json", function (signals) {
+          console.log(signals);
+          $.plot($("#sin"), [signals]);
+        });
+        $.getJSON("http://localhost:3000/signals/impulse.json", function (signals) {
+          $.plot($("#impulse"), [{data: signals}]);
+        });
+
