@@ -9,9 +9,11 @@
     <link href="/css/style.css" media="screen" rel="stylesheet" />
     <script src="//code.jquery.com/jquery-1.6.2.min.js"></script>
     <script src="/js/flot/jquery.flot.min.js"></script>
-    <style>
-      <div id="sin">{ width: 600, height: 400 }</div>
-      <div id="impulse">{ width: 600, height: 400 }</div>
+    <style type="text/css">
+      /*<![CDATA[*/
+        #sin { width: 600px; height: 400px }
+        #impulse { width: 600px; height: 400px }
+      /*]]>*/
     </style>
   </head>
   <body>
@@ -35,10 +37,10 @@
       <script type="text/javascript">
         //<![CDATA[
           $.getJSON("http://localhost:3000/signals/sin.json", function (signals) {
-            console.log(signals);
-            $.plot($("#sin"), [signals]);
+            $.plot($("#sin"), [{ data: signals }]);
           });
           $.getJSON("http://localhost:3000/signals/impulse.json", function (signals) {
+            console.log(signals);
             $.plot($("#impulse"), [{data: signals}]);
           });
         //]]>

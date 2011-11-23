@@ -1,0 +1,32 @@
+!!! 5
+%html(lang="ja")
+  %head
+    %meta(charset="UTF-8")
+    %title LT on Seesaa at 2011-11-22
+    /[if lt IE 9]
+      %script(src="//html5shim.googlecode.com/svn/trunk/html5.js")
+    %link(rel="stylesheet" media="screen" href="/css/style.css")
+    %script(src="//code.jquery.com/jquery-1.6.2.min.js")
+    %script(src="/js/flot.js")
+  %body
+    %header
+      %h1 HTTP とキー音
+      %h2 課題と難しかったところ
+    %div
+      %h1 課題
+      %ul
+        %li 反応が遅いのでまとめて POST する
+        %li ターミナルのキーイベントで POST する
+        %li XS してみる
+        %li 普通に POST すると順番が変わる可能性があるのでなんとかしたい
+      %h1 難しかったところ
+      %h2 キュー処理
+      %p
+        キューが空っぽになるとソースに再生を指示しないといけないので
+        再生すると再生し終わったバッファも含めて、はじめから再生してしまう。
+      %p
+        再生が終わってもキューからなくならないので、自分で取り出す。
+      %p
+        信号数とバッファの大きさが合わないと、途中で途切れてしまう。
+    %footer
+

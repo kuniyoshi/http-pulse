@@ -8,9 +8,9 @@
     %link(rel="stylesheet" media="screen" href="/css/style.css")
     %script(src="//code.jquery.com/jquery-1.6.2.min.js")
     %script(src="/js/flot/jquery.flot.min.js")
-    %style
-      #sin { width: 600, height: 400 }
-      #impulse { width: 600, height: 400 }
+    :css
+      #sin { width: 600px; height: 400px }
+      #impulse { width: 600px; height: 400px }
   %body
     %header
       %h1 HTTP とキー音
@@ -26,10 +26,10 @@
     %footer
       :javascript
         $.getJSON("http://localhost:3000/signals/sin.json", function (signals) {
-          console.log(signals);
-          $.plot($("#sin"), [signals]);
+          $.plot($("#sin"), [{ data: signals }]);
         });
         $.getJSON("http://localhost:3000/signals/impulse.json", function (signals) {
+          console.log(signals);
           $.plot($("#impulse"), [{data: signals}]);
         });
 

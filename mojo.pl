@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use 5.10.0;
+use utf8;
 use Mojolicious::Lite;
 use List::Util qw( shuffle );
 use List::MoreUtils qw( mesh );
@@ -69,10 +70,10 @@ get "input" => sub {
 get "signals/sin" => sub {
     my $self = shift;
     my @signals;
-    my $frequency = get_frequency( );
+    my $frequency = FREQUENCY_OF_LA;
 
-    for ( my $i = 0; $i < 50; $i++ ) {
-        my $signal = int( 10 * sin( 2 * PI * $frequency * $i / 50 ) );
+    for ( my $i = 0; $i < 500; $i++ ) {
+        my $signal = sin( 2 * PI * $frequency * $i / 500 );
         $signals[ $i ] = [ $i + 1, $signal ];
     }
 
@@ -81,7 +82,7 @@ get "signals/sin" => sub {
 
 get "signals/impulse" => sub {
     my $self = shift;
-    my @signals;
+    my @signals = @{ $SIGNALS{ ord "a" } };
 
     for ( my $i = 0; $i < @signals; $i++ ) {
         $signals[ $i ] = [ $i, $signals[ $i ] ];
@@ -143,6 +144,14 @@ __DATA__
 @@ input.html.ep
 %layout "layout";
 <h1>play</h1>
+<h2>動作概要</h2>
+<ul>
+  <li>キーダウンを JavaScript で補足する</li>
+  <li>押されたキーのコードを POST する</li>
+  <li>HTTP サーバがコードから信号を選ぶ</li>
+  <li>HTTP サーバが信号を音声サーバに出力する</li>
+  <li>HTTP サーバが応答を返す</li>
+</ul>
 <form>
   <fieldset>
     <textarea cols="80" rows="24"></textarea>
