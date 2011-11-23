@@ -1,0 +1,7 @@
+動かし方
+
+- cpanm -S Mojolicious
+- make
+- morbo mojo.pl
+- http://localhost:3000/slides/index.html
+
