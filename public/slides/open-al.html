@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LT on Seesaa at 2011-11-22</title>
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="/css/style.css" media="screen" rel="stylesheet" />
+    <script src="//code.jquery.com/jquery-1.6.2.min.js"></script>
+    <script src="/js/flot.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>HTTP とキー音</h1>
+      <h2>
+        <a href="http://www.memorize-being.net/releases/oal11spec-ja/index.html">OpenAL</a>
+      </h2>
+    </header>
+    <div>
+      <p>
+        参考した
+        <a href="http://sugarpot.sakura.ne.jp/yuno/?OpenAL%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%9F%E3%83%B3%E3%82%B0%E5%86%8D%E7%94%9F">サイト</a>
+      </p>
+      <dl>
+        <dt>device</dt>
+        <dd></dd>
+        <dt>context</dt>
+        <dd></dd>
+        <dt>source</dt>
+        <dd>
+          バッファキューを持つプレイヤ。
+          エフェクトをかけることができる。バッファと分かれているので、同じバッファを使って違う音をだすときに便利そう。
+          今回は使っていない。
+        </dd>
+        <dt>buffer</dt>
+        <dd>信号を指すポインタ</dd>
+      </dl>
+      <h1>ループ処理</h1>
+      <ul>
+        <li>標準入力がある間は続ける</li>
+        <li>入力をキャストして信号にする</li>
+        <li>キューにバッファがたまりすぎていたら、再生が終わるまで sleep する</li>
+        <li>再生が終わったバッファは配列の後ろにする（キューイング）</li>
+        <li>再生していないバッファをキューに入れる</li>
+      </ul>
+    </div>
+    <footer></footer>
+  </body>
+</html>
